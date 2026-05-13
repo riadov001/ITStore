@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;900&family=Inter:wght@300;400;500;600&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
@@ -68,64 +68,61 @@
 }
 
 :root {
-  --button-outline: rgba(255,255,255, .10);
-  --badge-outline: rgba(255,255,255, .05);
+  --button-outline: rgba(201,160,39, .15);
+  --badge-outline: rgba(201,160,39, .08);
+  --opaque-button-border-intensity: 9;
+  --elevate-1: rgba(255,255,255, .03);
+  --elevate-2: rgba(255,255,255, .06);
 
-  --opaque-button-border-intensity: 9;  
+  --background: 0 0% 4%;        /* #0A0A0A */
+  --foreground: 0 0% 92%;
+  --border: 0 0% 20%;           /* #333 */
 
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .09);
+  --card: 0 0% 7%;              /* #111 */
+  --card-foreground: 0 0% 90%;
+  --card-border: 44 60% 18%;
 
-  /* Dark luxury palette */
-  --background: 0 0% 2%; /* #050505 */
-  --foreground: 0 0% 95%; 
-  --border: 43 74% 20%; /* Dark gold border */
-  
-  --card: 0 0% 4%; 
-  --card-foreground: 0 0% 95%;
-  --card-border: 43 74% 25%;
+  --popover: 0 0% 8%;
+  --popover-foreground: 0 0% 92%;
+  --popover-border: 44 60% 20%;
 
-  --sidebar: 0 0% 4%;
-  --sidebar-foreground: 0 0% 95%;
-  --sidebar-border: 43 74% 25%;
-  --sidebar-primary: 43 74% 49%;
-  --sidebar-primary-foreground: 0 0% 2%;
-  --sidebar-accent: 43 74% 20%;
-  --sidebar-accent-foreground: 0 0% 95%;
-  --sidebar-ring: 43 74% 49%;
+  --sidebar: 0 0% 6%;
+  --sidebar-foreground: 0 0% 90%;
+  --sidebar-border: 44 60% 18%;
+  --sidebar-primary: 44 62% 47%;
+  --sidebar-primary-foreground: 0 0% 5%;
+  --sidebar-accent: 44 60% 15%;
+  --sidebar-accent-foreground: 0 0% 90%;
+  --sidebar-ring: 44 62% 47%;
 
-  --popover: 0 0% 4%;
-  --popover-foreground: 0 0% 95%;
-  --popover-border: 43 74% 25%;
-
-  --primary: 43 74% 49%; /* Gold #D4AF37 */
+  --primary: 44 62% 47%;        /* Gold #C9A027 */
   --primary-foreground: 0 0% 5%;
 
-  --secondary: 0 0% 10%;
-  --secondary-foreground: 43 74% 49%;
+  --secondary: 0 0% 12%;
+  --secondary-foreground: 0 0% 75%;
 
-  --muted: 0 0% 12%;
-  --muted-foreground: 0 0% 65%;
+  --muted: 0 0% 14%;
+  --muted-foreground: 0 0% 53%;  /* #888 */
 
-  --accent: 0 0% 10%;
-  --accent-foreground: 43 74% 49%;
+  --accent: 0 0% 11%;
+  --accent-foreground: 44 62% 47%;
 
-  --destructive: 0 84% 60%;
+  --destructive: 0 84% 55%;
   --destructive-foreground: 0 0% 98%;
 
-  --input: 43 74% 20%;
-  --ring: 43 74% 49%;
+  --input: 0 0% 16%;
+  --ring: 44 62% 47%;
 
-  --chart-1: 43 74% 49%;
-  --chart-2: 0 0% 20%;
+  --chart-1: 44 62% 47%;
+  --chart-2: 0 0% 25%;
   --chart-3: 0 0% 40%;
-  --chart-4: 0 0% 60%;
-  --chart-5: 0 0% 80%;
+  --chart-4: 0 0% 55%;
+  --chart-5: 0 0% 70%;
 
-  --app-font-sans: 'Inter', sans-serif;
-  --app-font-serif: 'Playfair Display', Georgia, serif;
-  --app-font-mono: Menlo, monospace;
-  --radius: 0.5rem; 
+  --app-font-sans: 'Inter', system-ui, sans-serif;
+  --app-font-serif: 'Barlow Condensed', sans-serif;
+  --app-font-mono: 'JetBrains Mono', monospace;
+  --radius: 0.25rem;
 
   --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
   --shadow-xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
@@ -149,6 +146,61 @@
 
 .dark {
   /* It's always dark mode */
+}
+
+/* Tech grid background for sections */
+.tech-grid-bg {
+  background-image:
+    linear-gradient(rgba(201,160,39,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,160,39,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Gold shimmer text */
+.gold-shimmer {
+  background: linear-gradient(90deg, #8B6914 0%, #C9A027 30%, #E8C547 50%, #C9A027 70%, #8B6914 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+@keyframes shimmer {
+  from { background-position: 0% center; }
+  to { background-position: 200% center; }
+}
+
+/* Glowing gold border */
+.gold-border-glow {
+  border: 1px solid rgba(201,160,39,0.3);
+  box-shadow: 0 0 20px -8px rgba(201,160,39,0.4), inset 0 0 20px -8px rgba(201,160,39,0.05);
+}
+
+/* Corner accent decoration */
+.corner-accent::before, .corner-accent::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: #C9A027;
+  border-style: solid;
+}
+.corner-accent::before { top: 0; left: 0; border-width: 2px 0 0 2px; }
+.corner-accent::after { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+
+/* Scan line overlay */
+.scan-lines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.05) 2px,
+    rgba(0,0,0,0.05) 4px
+  );
+  pointer-events: none;
 }
 
 @layer base {
