@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Adil Smart Store"
+version = "1.0.0"
+id = "artifacts/adil-smart-store"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23343
+
+[services.development]
+run = "pnpm --filter @workspace/adil-smart-store run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/adil-smart-store", "run", "build" ]
+publicDir = "artifacts/adil-smart-store/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23343"
+BASE_PATH = "/"
