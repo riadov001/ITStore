@@ -5,8 +5,9 @@ import { useListFeaturedProducts, useListCategories } from "@workspace/api-clien
 import { ProductCard } from "@/components/product/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { ChevronDown, ShieldCheck, Truck, HeadphonesIcon, BadgePercent, Star, Users, Watch, Box } from "lucide-react";
+import { ChevronDown, ShieldCheck, Truck, HeadphonesIcon, BadgePercent, Star, Users, Watch, Box, MapPin, MessageCircle, Zap } from "lucide-react";
 import { useRef, useEffect, useState } from "react";
+import { CONTACT, waLink } from "@/lib/contact";
 
 function Counter({ from, to, duration = 2 }: { from: number; to: number; duration?: number }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -15,7 +16,7 @@ function Counter({ from, to, duration = 2 }: { from: number; to: number; duratio
 
   useEffect(() => {
     if (inView) {
-      let start = null;
+      let start: number | null = null;
       const step = (timestamp: number) => {
         if (!start) start = timestamp;
         const progress = Math.min((timestamp - start) / (duration * 1000), 1);
@@ -61,23 +62,23 @@ export default function Home() {
           />
         </div>
 
-        <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center">
+        <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center pb-24">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="w-full max-w-5xl mx-auto flex flex-col items-center"
           >
-            <div className="border border-[#C9A027]/30 text-primary uppercase text-[10px] tracking-[0.3em] px-4 py-1.5 rounded-full mb-8 font-bold bg-[#111]/50 backdrop-blur-sm">
+            <div className="border border-primary/30 text-primary uppercase text-[10px] tracking-[0.3em] px-4 py-1.5 rounded-full mb-8 font-bold bg-[#111]/50 backdrop-blur-sm">
               OUJDA, MAROC — ACCESSOIRES PREMIUM
             </div>
             
             <h1 className="flex flex-col items-center justify-center font-serif leading-[0.85] mb-6">
-              <span className="text-[5rem] sm:text-[7rem] md:text-[10rem] font-black text-white tracking-tight">ADIL</span>
-              <span className="text-[5rem] sm:text-[7rem] md:text-[10rem] font-black gold-shimmer tracking-tight">SMART STORE</span>
+              <span className="text-[4.5rem] md:text-[8rem] font-black text-white tracking-tight">ADIL</span>
+              <span className="text-[4.5rem] md:text-[8rem] font-black gold-shimmer tracking-tight">SMART STORE</span>
             </h1>
             
-            <p className="text-[#888] tracking-[0.3em] text-xs sm:text-sm uppercase mb-12">
+            <p className="text-[#888] tracking-[0.3em] text-[10px] sm:text-xs uppercase mb-12 font-bold">
               Smartwatches • Écouteurs • Chargeurs • Powerbanks • Coques
             </p>
             
@@ -86,10 +87,10 @@ export default function Home() {
                 DÉCOUVRIR LA BOUTIQUE
               </Link>
               <a
-                href="https://wa.me/212600000000"
+                href={waLink()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto border border-[#555] bg-transparent text-[#888] px-10 py-4 font-bold uppercase tracking-widest text-xs transition-colors hover:border-[#C9A027] hover:text-[#C9A027]"
+                className="w-full sm:w-auto border border-[#555] bg-transparent text-[#888] px-10 py-4 font-bold uppercase tracking-widest text-xs transition-colors hover:border-primary hover:text-primary"
               >
                 WHATSAPP
               </a>
@@ -97,43 +98,47 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* Decorative elements */}
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 text-[30rem] font-serif font-black text-[#C9A027] opacity-5 pointer-events-none select-none leading-none mr-[-10%]">
-          01
+        {/* Section bas hero */}
+        <div className="absolute bottom-0 left-0 w-full bg-[#070707] border-t border-[#222]">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 py-4 text-[10px] font-mono text-[#888] uppercase tracking-widest text-center divide-y md:divide-y-0 md:divide-x divide-[#333]">
+              <div className="pt-2 md:pt-0 w-full md:w-auto md:px-8">
+                {CONTACT.address}
+              </div>
+              <div className="pt-2 md:pt-0 w-full md:w-auto md:px-8">
+                {CONTACT.hours}
+              </div>
+              <div className="pt-2 md:pt-0 w-full md:w-auto md:px-8 text-primary font-bold">
+                {CONTACT.tel1}
+              </div>
+            </div>
+          </div>
         </div>
-
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 text-[#555]"
-        >
-          <ChevronDown className="w-8 h-8" />
-        </motion.div>
       </section>
 
       {/* Stats Bar */}
-      <section className="bg-[#111] border-y border-[#333] relative z-20">
+      <section className="bg-[#0D0D0D] border-b border-[#222] relative z-20 w-full">
         <div className="container mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-[#333]">
-            <div className="flex flex-col items-center justify-center py-8 px-4 text-center group hover:bg-[#1a1a1a] transition-colors">
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-[#222]">
+            <div className="flex flex-col items-center justify-center py-10 px-4 text-center group hover:bg-[#111] transition-colors">
               <span className="font-serif text-4xl md:text-5xl font-bold text-white group-hover:text-primary transition-colors mb-2">
                 <Counter from={0} to={100} />+
               </span>
-              <span className="text-[#888] text-[10px] uppercase tracking-widest font-bold">Marques</span>
+              <span className="text-[#888] text-[10px] uppercase tracking-widest font-bold">Produits</span>
             </div>
-            <div className="flex flex-col items-center justify-center py-8 px-4 text-center group hover:bg-[#1a1a1a] transition-colors">
+            <div className="flex flex-col items-center justify-center py-10 px-4 text-center group hover:bg-[#111] transition-colors">
               <span className="font-serif text-4xl md:text-5xl font-bold text-white group-hover:text-primary transition-colors mb-2">
                 <Counter from={0} to={6} />
               </span>
               <span className="text-[#888] text-[10px] uppercase tracking-widest font-bold">Catégories</span>
             </div>
-            <div className="flex flex-col items-center justify-center py-8 px-4 text-center group hover:bg-[#1a1a1a] transition-colors">
+            <div className="flex flex-col items-center justify-center py-10 px-4 text-center group hover:bg-[#111] transition-colors">
               <span className="font-serif text-4xl md:text-5xl font-bold text-white group-hover:text-primary transition-colors mb-2">
                 <Counter from={0} to={500} />+
               </span>
-              <span className="text-[#888] text-[10px] uppercase tracking-widest font-bold">Clients Satisfaits</span>
+              <span className="text-[#888] text-[10px] uppercase tracking-widest font-bold">Clients</span>
             </div>
-            <div className="flex flex-col items-center justify-center py-8 px-4 text-center group hover:bg-[#1a1a1a] transition-colors">
+            <div className="flex flex-col items-center justify-center py-10 px-4 text-center group hover:bg-[#111] transition-colors">
               <span className="font-serif text-4xl md:text-5xl font-bold text-white group-hover:text-primary transition-colors mb-2">
                 7j/7
               </span>
@@ -144,21 +149,21 @@ export default function Home() {
       </section>
 
       {/* Categories */}
-      <section className="py-32 bg-[#0A0A0A] scan-lines relative">
+      <section className="py-24 bg-[#0A0A0A] relative border-b border-[#222]">
         <div className="container mx-auto px-4 relative z-10">
-          <div className="mb-16">
-            <h2 className="font-serif text-4xl md:text-6xl font-black text-white mb-6 uppercase tracking-tight">NOS CATÉGORIES</h2>
-            <div className="h-[2px] w-24 bg-primary" />
+          <div className="text-center mb-16">
+            <h2 className="font-serif text-4xl md:text-6xl font-black text-white mb-4 uppercase tracking-tight">NOS CATÉGORIES</h2>
+            <div className="h-[2px] w-24 bg-primary mx-auto" />
           </div>
 
           {categoriesLoading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
                 <Skeleton key={i} className="aspect-[4/3] bg-[#111] border border-[#333]" />
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {categories?.map((category, index) => (
                 <motion.div
                   key={category.slug}
@@ -169,18 +174,18 @@ export default function Home() {
                 >
                   <Link 
                     href={`/boutique?category=${category.slug}`}
-                    className="group relative flex aspect-[4/3] flex-col items-center justify-center overflow-hidden bg-[#111] border border-[#333] p-6 text-center transition-all duration-500 hover:gold-border-glow hover:-translate-y-2 corner-accent"
+                    className="group relative flex aspect-[4/3] flex-col items-center justify-center overflow-hidden bg-[#111] border border-[#222] p-6 text-center transition-all duration-500 hover:gold-border-glow hover:-translate-y-2 corner-accent"
                   >
-                    <div className="mb-6 transform transition-transform duration-500 group-hover:scale-125 group-hover:text-primary text-[#555]">
-                      {/* Simple logic for icon, you might want to map these better */}
+                    <div className="mb-6 transform transition-transform duration-500 group-hover:scale-110 text-[#555] group-hover:text-primary">
                       {category.name.toLowerCase().includes('watch') ? <Watch className="w-16 h-16" strokeWidth={1} /> :
                        category.name.toLowerCase().includes('écouteur') ? <HeadphonesIcon className="w-16 h-16" strokeWidth={1} /> :
+                       category.name.toLowerCase().includes('chargeur') ? <Zap className="w-16 h-16" strokeWidth={1} /> :
                        <Box className="w-16 h-16" strokeWidth={1} />}
                     </div>
-                    <h3 className="font-serif text-2xl md:text-3xl font-bold text-white uppercase tracking-wider group-hover:text-primary transition-colors">{category.name}</h3>
-                    <span className="mt-4 text-[10px] uppercase tracking-widest text-[#888] font-bold group-hover:text-primary transition-colors">
+                    <h3 className="font-serif text-3xl font-bold text-white uppercase tracking-wider group-hover:text-primary transition-colors">{category.name}</h3>
+                    <div className="mt-4 bg-primary/10 text-primary px-3 py-1 text-[10px] font-bold uppercase tracking-widest border border-primary/20">
                       {category.count} Produits
-                    </span>
+                    </div>
                   </Link>
                 </motion.div>
               ))}
@@ -190,8 +195,8 @@ export default function Home() {
       </section>
 
       {/* Featured Products */}
-      <section className="py-32 bg-[#0A0A0A] relative overflow-hidden border-t border-[#333]">
-        <div className="absolute right-0 top-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[150px] pointer-events-none" />
+      <section className="py-24 bg-[#0A0A0A] relative overflow-hidden border-b border-[#222]">
+        <div className="absolute left-0 top-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[150px] pointer-events-none" />
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="flex items-end justify-between mb-16">
@@ -213,7 +218,7 @@ export default function Home() {
           </div>
 
           {featuredLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
               {[1, 2, 3, 4].map((i) => (
                 <Skeleton key={i} className="aspect-[3/4] bg-[#111] border border-[#333]" />
               ))}
@@ -223,7 +228,7 @@ export default function Home() {
               <Carousel opts={{ align: "start", loop: true }} className="w-full">
                 <CarouselContent className="-ml-6">
                   {featuredProducts?.map((product) => (
-                    <CarouselItem key={product.id} className="pl-6 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                    <CarouselItem key={product.id} className="pl-6 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
                       <ProductCard product={product} />
                     </CarouselItem>
                   ))}
@@ -244,26 +249,71 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Why Us Band */}
-      <section className="bg-[#C9A027] py-6">
+      {/* Why Us Section */}
+      <section className="py-24 bg-[#0A0A0A]">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0 divide-y md:divide-y-0 md:divide-x divide-black/20">
-            <div className="flex items-center justify-center gap-4 w-full py-4 md:py-0">
-              <ShieldCheck className="w-6 h-6 text-black" strokeWidth={1.5} />
-              <span className="font-bold text-black text-xs uppercase tracking-widest">Produits Authentiques</span>
+          <div className="text-center mb-16">
+            <h2 className="font-serif text-4xl md:text-5xl font-black text-white uppercase tracking-tight mb-4">
+              Pourquoi Adil Smart Store
+            </h2>
+            <div className="h-[2px] w-24 bg-primary mx-auto" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <div className="bg-[#0D0D0D] border border-[#222] p-8 flex flex-col items-center text-center space-y-4 hover:border-primary/40 transition-colors">
+              <ShieldCheck className="w-12 h-12 text-primary" strokeWidth={1} />
+              <h3 className="font-serif text-2xl font-bold text-white uppercase">100% Authentique</h3>
+              <p className="text-[#888] text-sm">Tous nos produits sont garantis originaux avec la qualité des grandes marques.</p>
             </div>
-            <div className="flex items-center justify-center gap-4 w-full py-4 md:py-0">
-              <Truck className="w-6 h-6 text-black" strokeWidth={1.5} />
-              <span className="font-bold text-black text-xs uppercase tracking-widest">Livraison Rapide à Oujda</span>
+            <div className="bg-[#0D0D0D] border border-[#222] p-8 flex flex-col items-center text-center space-y-4 hover:border-primary/40 transition-colors">
+              <BadgePercent className="w-12 h-12 text-primary" strokeWidth={1} />
+              <h3 className="font-serif text-2xl font-bold text-white uppercase">Meilleurs Prix</h3>
+              <p className="text-[#888] text-sm">Des tarifs compétitifs garantis sur toute la ville d'Oujda et ses environs.</p>
             </div>
-            <div className="flex items-center justify-center gap-4 w-full py-4 md:py-0">
-              <HeadphonesIcon className="w-6 h-6 text-black" strokeWidth={1.5} />
-              <span className="font-bold text-black text-xs uppercase tracking-widest">Support WhatsApp 7j/7</span>
+            <div className="bg-[#0D0D0D] border border-[#222] p-8 flex flex-col items-center text-center space-y-4 hover:border-primary/40 transition-colors">
+              <HeadphonesIcon className="w-12 h-12 text-primary" strokeWidth={1} />
+              <h3 className="font-serif text-2xl font-bold text-white uppercase">Support 7j/7</h3>
+              <p className="text-[#888] text-sm">Une équipe réactive disponible tous les jours sur WhatsApp pour vous conseiller.</p>
             </div>
-            <div className="flex items-center justify-center gap-4 w-full py-4 md:py-0">
-              <BadgePercent className="w-6 h-6 text-black" strokeWidth={1.5} />
-              <span className="font-bold text-black text-xs uppercase tracking-widest">Meilleurs Prix Garantis</span>
+            <div className="bg-[#0D0D0D] border border-[#222] p-8 flex flex-col items-center text-center space-y-4 hover:border-primary/40 transition-colors">
+              <Truck className="w-12 h-12 text-primary" strokeWidth={1} />
+              <h3 className="font-serif text-2xl font-bold text-white uppercase">Livraison Oujda</h3>
+              <p className="text-[#888] text-sm">Service de livraison rapide disponible partout dans la ville d'Oujda.</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Final */}
+      <section className="bg-gradient-to-br from-[#C9A027] to-[#8B6914] py-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-black/10 tech-grid-bg mix-blend-overlay" />
+        <div className="container mx-auto px-4 relative z-10 text-center flex flex-col items-center">
+          <h2 className="font-serif text-4xl md:text-5xl font-black text-black uppercase tracking-tight mb-4">
+            Vous cherchez un produit ?
+          </h2>
+          <p className="text-black/80 font-bold mb-10 max-w-xl mx-auto uppercase tracking-widest text-sm">
+            Contactez-nous directement sur WhatsApp pour vérifier la disponibilité, obtenir le meilleur prix ou passer commande.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto mb-12">
+            <a
+              href={waLink()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-black text-[#C9A027] px-8 py-4 font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-3 transition-transform hover:scale-105 shadow-xl"
+            >
+              <MessageCircle className="w-5 h-5" />
+              CONTACTER SUR WHATSAPP
+            </a>
+            <Link
+              href="/boutique"
+              className="border-2 border-black bg-transparent text-black px-8 py-4 font-bold uppercase tracking-widest text-xs flex items-center justify-center transition-colors hover:bg-black hover:text-[#C9A027]"
+            >
+              VOIR LA BOUTIQUE
+            </Link>
+          </div>
+          <div className="flex items-center gap-2 text-black/90 font-bold text-xs uppercase tracking-widest">
+            <MapPin className="w-4 h-4" />
+            {CONTACT.address}
           </div>
         </div>
       </section>

@@ -2,16 +2,16 @@ import { Product } from "@workspace/api-client-react/src/generated/api.schemas";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { MessageCircle } from "lucide-react";
+import { waLink } from "@/lib/contact";
 
 export function ProductCard({ product }: { product: Product }) {
-  const whatsappText = encodeURIComponent(`Bonjour Adil Smart Store, je voudrais connaître le prix de : ${product.name}`);
-  const whatsappUrl = `https://wa.me/212600000000?text=${whatsappText}`;
+  const whatsappUrl = waLink(product.name);
 
   return (
     <motion.div
       whileHover={{ y: -6 }}
       transition={{ duration: 0.3 }}
-      className="group relative flex flex-col overflow-hidden bg-[#111] border border-[#333] hover:border-[#C9A027]/50 corner-accent"
+      className="group relative flex flex-col overflow-hidden bg-[#111] border border-[#333] hover:border-[#C9A027]/50 corner-accent h-full"
     >
       <div className="relative aspect-square overflow-hidden bg-[#0A0A0A]">
         <img
@@ -30,8 +30,8 @@ export function ProductCard({ product }: { product: Product }) {
           {product.brand.charAt(0).toUpperCase()}
         </div>
 
-        <div className="absolute inset-0 bg-black/60 flex items-center justify-center translate-y-full transition-transform duration-300 group-hover:translate-y-0">
-          <Link href={`/produit/${product.slug}`} className="text-white font-serif tracking-widest uppercase text-sm border-b border-primary pb-1">
+        <div className="absolute inset-0 bg-black/80 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          <Link href={`/produit/${product.slug}`} className="text-white font-serif tracking-widest uppercase text-sm border-b border-primary pb-1 transform translate-y-4 transition-transform duration-300 group-hover:translate-y-0">
             VOIR DÉTAILS &rarr;
           </Link>
         </div>
@@ -42,34 +42,52 @@ export function ProductCard({ product }: { product: Product }) {
           {product.brand}
         </span>
         
-        <Link href={`/produit/${product.slug}`} className="block flex-1">
-          <h3 className="font-serif text-lg font-bold leading-tight text-white line-clamp-2 mb-3">
+        <Link href={`/produit/${product.slug}`} className="block mb-4">
+          <h3 className="font-serif text-lg font-bold leading-tight text-white line-clamp-2">
             {product.name}
           </h3>
         </Link>
         
-        {product.variants && product.variants.length > 0 && (
-          <div className="flex gap-2 mb-4">
-            {product.variants.slice(0, 3).map((v, i) => (
-              <span key={i} className="w-3 h-3 rounded-full border border-[#555] bg-[#222]" title={v} />
-            ))}
-            {product.variants.length > 3 && (
-              <span className="text-xs text-[#555] ml-1">+{product.variants.length - 3}</span>
-            )}
-          </div>
-        )}
+        <div className="mt-auto">
+          {/* Variants */}
+          {product.variants && product.variants.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {product.variants.slice(0, 3).map((v, i) => (
+                <span key={i} className="text-[10px] px-2 py-1 bg-[#333] text-[#888] font-bold uppercase tracking-wider">
+                  {v}
+                </span>
+              ))}
+              {product.variants.length > 3 && (
+                <span className="text-[10px] text-[#555] font-bold self-center">
+                  +{product.variants.length - 3}
+                </span>
+              )}
+            </div>
+          )}
 
-        <div className="h-[1px] w-full bg-[#333] mb-4" />
+          {/* Specs Mini */}
+          {product.specs && Object.keys(product.specs).length > 0 && (
+            <div className="flex flex-col gap-1 mb-4">
+              {Object.entries(product.specs).slice(0, 3).map(([k, v]) => (
+                <span key={k} className="text-[10px] text-[#555] truncate font-mono">
+                  <span className="text-[#888]">{k}:</span> {v as string}
+                </span>
+              ))}
+            </div>
+          )}
 
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex w-full items-center justify-center gap-2 bg-[#1a1a1a] border border-[#25D366]/30 text-[#25D366] px-4 py-3 text-xs font-bold uppercase tracking-wider transition-all hover:bg-[#25D366] hover:text-white hover:shadow-[0_0_15px_-3px_rgba(37,211,102,0.5)]"
-        >
-          <MessageCircle className="w-4 h-4" />
-          WhatsApp
-        </a>
+          <div className="h-[1px] w-full bg-[#333] mb-4" />
+
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex w-full items-center justify-center gap-2 bg-[#1a1a1a] border border-[#25D366]/30 text-[#25D366] px-4 py-3 text-xs font-bold uppercase tracking-wider transition-all hover:bg-[#25D366] hover:text-white hover:shadow-[0_0_15px_-3px_rgba(37,211,102,0.5)]"
+          >
+            <MessageCircle className="w-4 h-4" />
+            WhatsApp
+          </a>
+        </div>
       </div>
     </motion.div>
   );
