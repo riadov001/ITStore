@@ -1,0 +1,13 @@
+{
+  "name": "adil-smart-store",
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node --enable-source-maps dist/index.mjs",
+    "migrate": "node migrate.mjs",
+    "seed": "node seed.mjs"
+  }
+}

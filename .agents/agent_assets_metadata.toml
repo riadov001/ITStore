@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "THDxKZcGrFYjGolQMbta8"
+uri = "file://adil-smart-store-hostinger.tar.gz"
+type = "unspecified"
+title = "adil-smart-store-hostinger.tar.gz — Déploiement Hostinger"
