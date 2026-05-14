@@ -6,3 +6,9 @@ id = "THDxKZcGrFYjGolQMbta8"
 uri = "file://adil-smart-store-hostinger.tar.gz"
 type = "unspecified"
 title = "adil-smart-store-hostinger.tar.gz — Déploiement Hostinger"
+
+[[outputs]]
+id = "CZ6R4XaLQUGVeJc0r0PUZ"
+uri = "file://adil-smart-store-hostinger.zip"
+type = "unspecified"
+title = "Adil Smart Store — Paquet Hostinger VPS"
