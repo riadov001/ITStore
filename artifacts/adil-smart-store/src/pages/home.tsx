@@ -9,37 +9,107 @@ import { ChevronDown, ShieldCheck, Truck, HeadphonesIcon, BadgePercent, Star, Us
 import { useRef, useEffect, useState } from "react";
 import { CONTACT, waLink } from "@/lib/contact";
 
-function Counter({ from, to, duration = 2 }: { from: number; to: number; duration?: number }) {
+function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true });
-  const [count, setCount] = useState(from);
-
+  const [count, setCount] = useState(0);
+  
   useEffect(() => {
-    if (inView) {
-      let start: number | null = null;
-      const step = (timestamp: number) => {
-        if (!start) start = timestamp;
-        const progress = Math.min((timestamp - start) / (duration * 1000), 1);
-        setCount(Math.floor(progress * (to - from) + from));
-        if (progress < 1) {
-          window.requestAnimationFrame(step);
-        }
-      };
-      window.requestAnimationFrame(step);
-    }
-  }, [inView, from, to, duration]);
-
-  return <span ref={ref}>{count}</span>;
+    if (!inView) return;
+    const step = Math.ceil(target / 40);
+    const interval = setInterval(() => {
+      setCount(c => { 
+        if (c >= target) { 
+          clearInterval(interval); 
+          return target; 
+        } 
+        return Math.min(c + step, target); 
+      });
+    }, 30);
+    return () => clearInterval(interval);
+  }, [inView, target]);
+  
+  return <span ref={ref} className="stat-number">{count}{suffix}</span>;
 }
+
+const particles = [
+  { top: "15%", left: "8%", size: 4, dur: "3.5s", delay: "0s" },
+  { top: "70%", left: "12%", size: 3, dur: "5s", delay: "1s" },
+  { top: "30%", right: "10%", size: 5, dur: "4s", delay: "0.5s" },
+  { top: "80%", right: "15%", size: 3, dur: "6s", delay: "2s" },
+  { top: "50%", left: "50%", size: 2, dur: "4.5s", delay: "1.5s" },
+  { top: "20%", right: "30%", size: 4, dur: "3s", delay: "0.8s" },
+];
 
 export default function Home() {
   const { data: featuredProducts, isLoading: featuredLoading } = useListFeaturedProducts();
   const { data: categories, isLoading: categoriesLoading } = useListCategories();
 
+  // Typing effect
+  const fullText = "SMARTWATCHES • ÉCOUTEURS • CHARGEURS • POWERBANKS • COQUES";
+  const [typedText, setTypedText] = useState("");
+  
+  useEffect(() => {
+    let i = 0;
+    let isDeleting = false;
+    let timeout: NodeJS.Timeout;
+
+    const type = () => {
+      if (!isDeleting && i <= fullText.length) {
+        setTypedText(fullText.slice(0, i));
+        i++;
+        timeout = setTimeout(type, 50);
+      } else if (!isDeleting && i > fullText.length) {
+        isDeleting = true;
+        timeout = setTimeout(type, 3000); // Wait before deleting
+      } else if (isDeleting && i > 0) {
+        setTypedText(fullText.slice(0, i));
+        i--;
+        timeout = setTimeout(type, 20); // Delete faster
+      } else if (isDeleting && i === 0) {
+        isDeleting = false;
+        timeout = setTimeout(type, 500); // Wait before typing again
+      }
+    };
+
+    timeout = setTimeout(type, 500);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  const containerVariants = {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.1 } }
+  };
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30, scale: 0.95 },
+    visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: "easeOut" } }
+  };
+
   return (
     <Layout>
       {/* Hero Section */}
       <section className="relative min-h-[100dvh] flex flex-col justify-center overflow-hidden bg-[#0A0A0A] tech-grid-bg pt-[72px]">
+        {/* Particles */}
+        {particles.map((p, i) => (
+          <div 
+            key={i} 
+            className="particle"
+            style={{ 
+              position: "absolute", 
+              top: p.top, 
+              left: p.left, 
+              right: p.right, 
+              width: p.size, 
+              height: p.size, 
+              background: "#C9A027", 
+              rotate: "45deg",
+              animationDelay: p.delay,
+              // @ts-ignore
+              "--dur": p.dur
+            }} 
+          />
+        ))}
+
         {/* Floating Orbs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
           <motion.div
@@ -74,12 +144,12 @@ export default function Home() {
             </div>
             
             <h1 className="flex flex-col items-center justify-center font-serif leading-[0.85] mb-6">
-              <span className="text-[4.5rem] md:text-[8rem] font-black text-white tracking-tight">ADIL</span>
+              <span className="text-[4.5rem] md:text-[8rem] font-black text-white tracking-tight glitch-text" data-text="ADIL">ADIL</span>
               <span className="text-[4.5rem] md:text-[8rem] font-black gold-shimmer tracking-tight">SMART STORE</span>
             </h1>
             
-            <p className="text-[#888] tracking-[0.3em] text-[10px] sm:text-xs uppercase mb-12 font-bold">
-              Smartwatches • Écouteurs • Chargeurs • Powerbanks • Coques
+            <p className="text-[#888] tracking-[0.3em] text-[10px] sm:text-xs uppercase mb-12 font-bold min-h-[1.5rem]">
+              {typedText}<span className="animate-pulse">_</span>
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 w-full sm:w-auto">
@@ -122,19 +192,19 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-[#222]">
             <div className="flex flex-col items-center justify-center py-10 px-4 text-center group hover:bg-[#111] transition-colors">
               <span className="font-serif text-4xl md:text-5xl font-bold text-white group-hover:text-primary transition-colors mb-2">
-                <Counter from={0} to={100} />+
+                <AnimatedCounter target={100} suffix="+" />
               </span>
               <span className="text-[#888] text-[10px] uppercase tracking-widest font-bold">Produits</span>
             </div>
             <div className="flex flex-col items-center justify-center py-10 px-4 text-center group hover:bg-[#111] transition-colors">
               <span className="font-serif text-4xl md:text-5xl font-bold text-white group-hover:text-primary transition-colors mb-2">
-                <Counter from={0} to={6} />
+                <AnimatedCounter target={6} />
               </span>
               <span className="text-[#888] text-[10px] uppercase tracking-widest font-bold">Catégories</span>
             </div>
             <div className="flex flex-col items-center justify-center py-10 px-4 text-center group hover:bg-[#111] transition-colors">
               <span className="font-serif text-4xl md:text-5xl font-bold text-white group-hover:text-primary transition-colors mb-2">
-                <Counter from={0} to={500} />+
+                <AnimatedCounter target={500} suffix="+" />
               </span>
               <span className="text-[#888] text-[10px] uppercase tracking-widest font-bold">Clients</span>
             </div>
@@ -163,18 +233,18 @@ export default function Home() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <motion.div 
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-50px" }}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
               {categories?.map((category, index) => (
-                <motion.div
-                  key={category.slug}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={{ delay: index * 0.1, duration: 0.5 }}
-                >
+                <motion.div key={category.slug} variants={itemVariants}>
                   <Link 
                     href={`/boutique?category=${category.slug}`}
-                    className="group relative flex aspect-[4/3] flex-col items-center justify-center overflow-hidden bg-[#111] border border-[#222] p-6 text-center transition-all duration-500 hover:gold-border-glow hover:-translate-y-2 corner-accent"
+                    className="group relative flex aspect-[4/3] flex-col items-center justify-center overflow-hidden bg-[#111] border border-[#222] p-6 text-center transition-all duration-500 hover:gold-border-glow hover:-translate-y-2 corner-accent card-3d scan-hover"
                   >
                     <div className="mb-6 transform transition-transform duration-500 group-hover:scale-110 text-[#555] group-hover:text-primary">
                       {category.name.toLowerCase().includes('watch') ? <Watch className="w-16 h-16" strokeWidth={1} /> :
@@ -189,7 +259,7 @@ export default function Home() {
                   </Link>
                 </motion.div>
               ))}
-            </div>
+            </motion.div>
           )}
         </div>
       </section>
@@ -260,33 +330,55 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <div className="bg-[#0D0D0D] border border-[#222] p-8 flex flex-col items-center text-center space-y-4 hover:border-primary/40 transition-colors">
-              <ShieldCheck className="w-12 h-12 text-primary" strokeWidth={1} />
+            <motion.div 
+              whileHover={{ y: -4, scale: 1.02 }}
+              className="bg-[#0D0D0D] border border-[#222] p-8 flex flex-col items-center text-center space-y-4 hover:border-primary/40 transition-colors"
+            >
+              <motion.div whileHover={{ rotate: 10 }} transition={{ type: "spring", stiffness: 300 }}>
+                <ShieldCheck className="w-12 h-12 text-primary" strokeWidth={1} />
+              </motion.div>
               <h3 className="font-serif text-2xl font-bold text-white uppercase">100% Authentique</h3>
               <p className="text-[#888] text-sm">Tous nos produits sont garantis originaux avec la qualité des grandes marques.</p>
-            </div>
-            <div className="bg-[#0D0D0D] border border-[#222] p-8 flex flex-col items-center text-center space-y-4 hover:border-primary/40 transition-colors">
-              <BadgePercent className="w-12 h-12 text-primary" strokeWidth={1} />
+            </motion.div>
+            <motion.div 
+              whileHover={{ y: -4, scale: 1.02 }}
+              className="bg-[#0D0D0D] border border-[#222] p-8 flex flex-col items-center text-center space-y-4 hover:border-primary/40 transition-colors"
+            >
+              <motion.div whileHover={{ rotate: 10 }} transition={{ type: "spring", stiffness: 300 }}>
+                <BadgePercent className="w-12 h-12 text-primary" strokeWidth={1} />
+              </motion.div>
               <h3 className="font-serif text-2xl font-bold text-white uppercase">Meilleurs Prix</h3>
               <p className="text-[#888] text-sm">Des tarifs compétitifs garantis sur toute la ville d'Oujda et ses environs.</p>
-            </div>
-            <div className="bg-[#0D0D0D] border border-[#222] p-8 flex flex-col items-center text-center space-y-4 hover:border-primary/40 transition-colors">
-              <HeadphonesIcon className="w-12 h-12 text-primary" strokeWidth={1} />
+            </motion.div>
+            <motion.div 
+              whileHover={{ y: -4, scale: 1.02 }}
+              className="bg-[#0D0D0D] border border-[#222] p-8 flex flex-col items-center text-center space-y-4 hover:border-primary/40 transition-colors"
+            >
+              <motion.div whileHover={{ rotate: 10 }} transition={{ type: "spring", stiffness: 300 }}>
+                <HeadphonesIcon className="w-12 h-12 text-primary" strokeWidth={1} />
+              </motion.div>
               <h3 className="font-serif text-2xl font-bold text-white uppercase">Support 7j/7</h3>
               <p className="text-[#888] text-sm">Une équipe réactive disponible tous les jours sur WhatsApp pour vous conseiller.</p>
-            </div>
-            <div className="bg-[#0D0D0D] border border-[#222] p-8 flex flex-col items-center text-center space-y-4 hover:border-primary/40 transition-colors">
-              <Truck className="w-12 h-12 text-primary" strokeWidth={1} />
+            </motion.div>
+            <motion.div 
+              whileHover={{ y: -4, scale: 1.02 }}
+              className="bg-[#0D0D0D] border border-[#222] p-8 flex flex-col items-center text-center space-y-4 hover:border-primary/40 transition-colors"
+            >
+              <motion.div whileHover={{ rotate: 10 }} transition={{ type: "spring", stiffness: 300 }}>
+                <Truck className="w-12 h-12 text-primary" strokeWidth={1} />
+              </motion.div>
               <h3 className="font-serif text-2xl font-bold text-white uppercase">Livraison Oujda</h3>
               <p className="text-[#888] text-sm">Service de livraison rapide disponible partout dans la ville d'Oujda.</p>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* CTA Final */}
-      <section className="bg-gradient-to-br from-[#C9A027] to-[#8B6914] py-20 relative overflow-hidden">
+      <section className="bg-gradient-to-br from-[#C9A027] to-[#8B6914] py-20 relative overflow-hidden shimmer-border">
         <div className="absolute inset-0 bg-black/10 tech-grid-bg mix-blend-overlay" />
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-[shimmer_3s_infinite]" style={{ backgroundSize: '200% 100%' }} />
+        
         <div className="container mx-auto px-4 relative z-10 text-center flex flex-col items-center">
           <h2 className="font-serif text-4xl md:text-5xl font-black text-black uppercase tracking-tight mb-4">
             Vous cherchez un produit ?

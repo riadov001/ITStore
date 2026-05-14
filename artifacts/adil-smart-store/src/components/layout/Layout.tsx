@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { AnimatePresence, motion, useScroll, useSpring } from "framer-motion";
@@ -15,6 +15,23 @@ export function Layout({ children }: { children: ReactNode }) {
     restDelta: 0.001
   });
 
+  useEffect(() => {
+    const cursor = document.createElement("div");
+    cursor.id = "cursor-glow";
+    cursor.style.cssText = "position:fixed;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(201,160,39,0.06) 0%,transparent 70%);pointer-events:none;z-index:0;transform:translate(-50%,-50%);transition:left 0.15s ease,top 0.15s ease;left:-300px;top:-300px;";
+    document.body.appendChild(cursor);
+
+    const move = (e: MouseEvent) => {
+      cursor.style.left = e.clientX + "px";
+      cursor.style.top = e.clientY + "px";
+    };
+    window.addEventListener("mousemove", move);
+    return () => {
+      window.removeEventListener("mousemove", move);
+      cursor.remove();
+    };
+  }, []);
+
   return (
     <div className="min-h-[100dvh] flex flex-col bg-[#0A0A0A] text-white selection:bg-primary/30 selection:text-primary relative overflow-hidden">
       {/* Scroll Progress */}
@@ -22,6 +39,7 @@ export function Layout({ children }: { children: ReactNode }) {
         className="fixed top-0 left-0 right-0 h-[2px] bg-primary z-[200] origin-left"
         style={{ scaleX }}
       />
+      <div className="scanline" aria-hidden="true" />
       
       <Navbar />
       

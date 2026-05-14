@@ -78,7 +78,12 @@ export default function Produit() {
     <Layout>
       <div className="bg-[#0A0A0A] min-h-screen">
         {/* Breadcrumb */}
-        <div className="border-b border-[#222] bg-[#070707] py-3 mt-[68px] md:mt-[100px]">
+        <motion.div 
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="border-b border-[#222] bg-[#070707] py-3 mt-[68px] md:mt-[100px]"
+        >
           <div className="container mx-auto px-4">
             <div className="flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-[#555]">
               <Link href="/" className="hover:text-primary transition-colors">Accueil</Link>
@@ -88,14 +93,14 @@ export default function Produit() {
               <span className="text-white truncate">{product.name}</span>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
             
             {/* Images Gallery */}
             <div className="space-y-4">
-              <div className="relative aspect-square overflow-hidden bg-[#111] border border-[#222] p-8 cursor-crosshair">
+              <div className="relative aspect-square overflow-hidden bg-[#111] border border-[#222] p-8 cursor-crosshair hover:neon-glow transition-all duration-300">
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={activeImage}
@@ -184,39 +189,59 @@ export default function Produit() {
                 <div className="mb-10">
                   <h3 className="text-[10px] font-bold text-white mb-4 uppercase tracking-[0.2em]">Spécifications techniques</h3>
                   <div className="border border-[#222] bg-[#111] overflow-hidden">
-                    <table className="w-full text-sm">
+                    <motion.table 
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true }}
+                      variants={{
+                        hidden: {},
+                        visible: { transition: { staggerChildren: 0.1 } }
+                      }}
+                      className="w-full text-sm"
+                    >
                       <tbody className="divide-y divide-[#222]">
                         {Object.entries(product.specs).map(([key, value], idx) => (
-                          <tr key={key} className={idx % 2 === 0 ? "bg-[#161616]" : "bg-[#111]"}>
+                          <motion.tr 
+                            key={key} 
+                            variants={{
+                              hidden: { opacity: 0, x: -20 },
+                              visible: { opacity: 1, x: 0, transition: { duration: 0.4 } }
+                            }}
+                            className={idx % 2 === 0 ? "bg-[#161616]" : "bg-[#111]"}
+                          >
                             <td className="py-3 px-4 text-[#888] w-1/3 uppercase tracking-widest text-[10px] font-bold">{key}</td>
                             <td className="py-3 px-4 text-white font-mono text-xs">{value as string}</td>
-                          </tr>
+                          </motion.tr>
                         ))}
                       </tbody>
-                    </table>
+                    </motion.table>
                   </div>
                 </div>
               )}
 
               {/* Actions */}
               <div className="mt-auto space-y-4 pt-4 border-t border-[#222]">
-                <a
+                <motion.a
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
                   href={waLink(product.name)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-3 bg-[#25D366] px-8 py-4 text-sm font-bold text-white uppercase tracking-widest transition-all hover:bg-[#20bd5a] hover:-translate-y-1 hover:shadow-[0_10px_30px_-10px_rgba(37,211,102,0.3)]"
+                  className="w-full flex items-center justify-center gap-3 bg-[#25D366] px-8 py-4 text-sm font-bold text-white uppercase tracking-widest transition-all hover:bg-[#20bd5a] hover:shadow-[0_10px_30px_-10px_rgba(37,211,102,0.3)]"
                 >
                   <MessageCircle className="w-5 h-5" /> Demander le Prix
-                </a>
+                </motion.a>
                 
-                <a
+                <motion.a
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
                   href={`https://wa.me/${CONTACT.wa2}?text=${encodeURIComponent(`Bonjour, plus d'infos sur : ${product.name}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full flex items-center justify-center gap-2 border border-[#25D366] text-[#25D366] bg-transparent px-8 py-3 text-xs font-bold uppercase tracking-widest transition-all hover:bg-[#25D366] hover:text-white"
                 >
                   <MessageCircle className="w-4 h-4" /> Contacter le 2ème numéro
-                </a>
+                </motion.a>
               </div>
 
               {/* Trust badges */}

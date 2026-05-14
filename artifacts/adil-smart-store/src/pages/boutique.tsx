@@ -44,7 +44,10 @@ export default function Boutique() {
       <div className="bg-[#0A0A0A] border-b border-[#222] pt-32 pb-16 relative overflow-hidden">
         <div className="absolute inset-0 tech-grid-bg opacity-30" />
         <div className="container mx-auto px-4 text-center relative z-10">
-          <h1 className="font-serif text-[4rem] md:text-[6rem] font-black text-white uppercase tracking-tight leading-none mb-6">
+          <h1 
+            data-text="BOUTIQUE"
+            className="font-serif text-[4rem] md:text-[6rem] font-black text-white uppercase tracking-tight leading-none mb-6 glitch-text hover:before:opacity-100"
+          >
             BOUTIQUE
           </h1>
           <div className="h-[2px] w-24 bg-primary mx-auto mb-6" />
@@ -72,7 +75,8 @@ export default function Boutique() {
             {/* Category Pills (Horizontal Scroll Mobile) */}
             <div className="w-full lg:flex-1 overflow-x-auto pb-2 lg:pb-0 hide-scrollbar">
               <div className="flex lg:flex-wrap items-center gap-2 lg:justify-center min-w-max px-1">
-                <button
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => { setCategory(undefined); setPage(0); }}
                   className={`px-6 py-3 lg:py-2 text-[10px] uppercase tracking-widest font-bold border transition-colors whitespace-nowrap ${
                     !category || category === "all"
@@ -81,9 +85,10 @@ export default function Boutique() {
                   }`}
                 >
                   Tous
-                </button>
+                </motion.button>
                 {categoriesData?.map(c => (
-                  <button
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
                     key={c.slug}
                     onClick={() => { setCategory(c.slug); setPage(0); }}
                     className={`px-6 py-3 lg:py-2 text-[10px] uppercase tracking-widest font-bold border transition-colors whitespace-nowrap ${
@@ -93,7 +98,7 @@ export default function Boutique() {
                     }`}
                   >
                     {c.name}
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>
@@ -154,19 +159,28 @@ export default function Boutique() {
             </motion.div>
           ) : (
             <div className="space-y-16">
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 items-stretch">
-                {data?.products.map((product, idx) => (
+              <motion.div 
+                initial="hidden"
+                animate="visible"
+                variants={{
+                  hidden: {},
+                  visible: { transition: { staggerChildren: 0.08 } }
+                }}
+                className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 items-stretch"
+              >
+                {data?.products.map((product) => (
                   <motion.div
                     key={product.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.05 }}
+                    variants={{
+                      hidden: { opacity: 0, y: 30, scale: 0.95 },
+                      visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: "easeOut" } }
+                    }}
                     className="h-full"
                   >
                     <ProductCard product={product} />
                   </motion.div>
                 ))}
-              </div>
+              </motion.div>
               
               {data && data.total > (page + 1) * limit && (
                 <div className="text-center">

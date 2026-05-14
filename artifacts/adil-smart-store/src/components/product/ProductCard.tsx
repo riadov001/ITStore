@@ -11,17 +11,18 @@ export function ProductCard({ product }: { product: Product }) {
     <motion.div
       whileHover={{ y: -6 }}
       transition={{ duration: 0.3 }}
-      className="group relative flex flex-col overflow-hidden bg-[#111] border border-[#333] hover:border-[#C9A027]/50 corner-accent h-full"
+      className="group relative flex flex-col overflow-hidden bg-[#111] border border-[#333] hover:border-[#C9A027]/50 corner-accent h-full scan-hover"
     >
       <div className="relative aspect-square overflow-hidden bg-[#0A0A0A]">
-        <img
+        <motion.img
+          whileHover={{ scale: 1.08 }}
           src={product.images[0] || "https://placehold.co/600x600/1a1a1a/C9A027?text=Adil"}
           alt={product.name}
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
         
         {product.featured && (
-          <div className="absolute top-3 left-3 bg-primary text-black text-[10px] uppercase font-bold tracking-widest px-2 py-1">
+          <div className="absolute top-3 left-3 bg-primary text-black text-[10px] uppercase font-bold tracking-widest px-2 py-1 neon-glow">
             En Vedette
           </div>
         )}
@@ -51,7 +52,7 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="mt-auto">
           {/* Variants */}
           {product.variants && product.variants.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="flex flex-wrap gap-2 mb-4 relative">
               {product.variants.slice(0, 3).map((v, i) => (
                 <span key={i} className="text-[10px] px-2 py-1 bg-[#333] text-[#888] font-bold uppercase tracking-wider">
                   {v}
@@ -62,6 +63,9 @@ export function ProductCard({ product }: { product: Product }) {
                   +{product.variants.length - 3}
                 </span>
               )}
+              <div className="absolute -bottom-2 right-0 translate-y-full text-[10px] text-primary/80 font-medium">
+                {product.variants.length} couleurs
+              </div>
             </div>
           )}
 

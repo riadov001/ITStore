@@ -228,3 +228,126 @@
     pointer-events: none;
   }
 }
+
+/* ─── Scan Line Effect ─── */
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+.scanline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(201, 160, 39, 0.3), transparent);
+  animation: scanline 8s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ─── Glitch Text Effect ─── */
+@keyframes glitch-1 {
+  0%, 100% { clip-path: inset(0 0 95% 0); transform: translate(-2px, 0); }
+  25% { clip-path: inset(30% 0 50% 0); transform: translate(2px, 0); }
+  50% { clip-path: inset(60% 0 20% 0); transform: translate(-1px, 0); }
+  75% { clip-path: inset(80% 0 5% 0); transform: translate(1px, 0); }
+}
+@keyframes glitch-2 {
+  0%, 100% { clip-path: inset(80% 0 5% 0); transform: translate(2px, 0); }
+  25% { clip-path: inset(10% 0 70% 0); transform: translate(-2px, 0); }
+  50% { clip-path: inset(45% 0 40% 0); transform: translate(1px, 0); }
+  75% { clip-path: inset(0% 0 95% 0); transform: translate(-1px, 0); }
+}
+.glitch-text {
+  position: relative;
+}
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  font: inherit;
+  color: inherit;
+}
+.glitch-text::before {
+  color: #C9A027;
+  animation: glitch-1 3s infinite steps(1);
+  opacity: 0.5;
+}
+.glitch-text::after {
+  color: #fff;
+  animation: glitch-2 3s infinite steps(1);
+  opacity: 0.3;
+}
+
+/* ─── Shimmer border ─── */
+@keyframes border-shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.shimmer-border {
+  position: relative;
+}
+.shimmer-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #C9A027, #fff5, #C9A027, #8B6914);
+  background-size: 300% 300%;
+  animation: border-shimmer 3s ease infinite;
+  z-index: -1;
+}
+
+/* ─── Number counter glow ─── */
+.stat-number {
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 30px rgba(201, 160, 39, 0.5);
+}
+
+/* ─── Card 3D tilt ─── */
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease;
+}
+.card-3d:hover {
+  transform: perspective(800px) rotateX(-2deg) rotateY(2deg) scale(1.02);
+}
+
+/* ─── Neon glow pulse ─── */
+@keyframes neon-pulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(201, 160, 39, 0.3), 0 0 20px rgba(201, 160, 39, 0.1); }
+  50% { box-shadow: 0 0 10px rgba(201, 160, 39, 0.6), 0 0 40px rgba(201, 160, 39, 0.3), 0 0 80px rgba(201, 160, 39, 0.1); }
+}
+.neon-glow {
+  animation: neon-pulse 2.5s ease-in-out infinite;
+}
+
+/* ─── Particle float ─── */
+@keyframes float-particle {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+  33% { transform: translateY(-20px) rotate(120deg); opacity: 1; }
+  66% { transform: translateY(10px) rotate(240deg); opacity: 0.4; }
+}
+.particle { animation: float-particle var(--dur, 4s) ease-in-out infinite; }
+
+/* ─── Horizontal scan on hover ─── */
+.scan-hover {
+  position: relative;
+  overflow: hidden;
+}
+.scan-hover::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(201,160,39,0.08), transparent);
+  transition: left 0.5s ease;
+}
+.scan-hover:hover::after {
+  left: 150%;
+}
