@@ -1,285 +1,172 @@
-# Guide de Déploiement — Adil Smart Store sur Hostinger VPS
-
-## Prérequis sur Hostinger
-
-- VPS Hostinger (Ubuntu 22.04 recommandé) — Plan KVM 2 minimum
-- Accès SSH root ou sudo
-- Un nom de domaine pointant vers l'IP de votre VPS (ex: adilsmartstore.ma)
+# Guide de Déploiement — Adil Smart Store
+## Hostinger Premium · Node.js (hPanel)
 
 ---
 
-## Étape 1 — Préparer le serveur (une seule fois)
+## Avant de commencer — Base de données PostgreSQL gratuite
 
-Connectez-vous en SSH à votre VPS :
+Hostinger Premium inclut MySQL, mais notre application utilise PostgreSQL.
+**Solution : créer une base PostgreSQL gratuite sur Neon.tech (5 minutes).**
 
-```bash
-ssh root@VOTRE_IP_VPS
+### Étape 0 — Créer la base de données PostgreSQL (Neon.tech gratuit)
+
+1. Allez sur **https://neon.tech** → cliquez "Sign Up" (gratuit, pas de carte bancaire)
+2. Créez un projet → nommez-le `adil-smart-store`
+3. Une fois créé, cliquez sur **"Connection string"**
+4. Copiez la chaîne qui ressemble à :
+   ```
+   postgresql://username:password@ep-xxxx.us-east-2.aws.neon.tech/neondb?sslmode=require
+   ```
+5. **Gardez-la**, vous en aurez besoin à l'étape 3.
+
+---
+
+## Étape 1 — Uploader les fichiers sur Hostinger
+
+### Via le File Manager hPanel (recommandé)
+
+1. Connectez-vous sur **hPanel → Websites → Gérer**
+2. Allez dans **Files → File Manager**
+3. Naviguez vers le dossier de votre application Node.js
+   *(généralement `/home/votre-user/domains/votre-domaine.com/` ou le dossier configuré dans Node.js Manager)*
+4. Supprimez le contenu existant si besoin
+5. Uploadez le fichier **`adil-smart-store-hostinger.zip`**
+6. Faites un clic droit → **Extract** pour extraire le contenu
+7. Assurez-vous que le contenu du dossier `deploy/` est à la racine du dossier de l'app
+
+La structure attendue dans votre dossier d'application :
 ```
-
-### 1.1 Mettre à jour le système
-
-```bash
-apt update && apt upgrade -y
-```
-
-### 1.2 Installer Node.js 20 (via nvm)
-
-```bash
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-source ~/.bashrc
-nvm install 20
-nvm use 20
-node --version   # doit afficher v20.x.x
-```
-
-### 1.3 Installer PM2 (gestionnaire de processus)
-
-```bash
-npm install -g pm2
-```
-
-### 1.4 Installer Nginx
-
-```bash
-apt install nginx -y
-systemctl enable nginx
-systemctl start nginx
-```
-
-### 1.5 Installer PostgreSQL
-
-```bash
-apt install postgresql postgresql-contrib -y
-systemctl enable postgresql
-systemctl start postgresql
-```
-
-### 1.6 Créer la base de données PostgreSQL
-
-```bash
-sudo -u postgres psql
-```
-
-Dans le terminal PostgreSQL, tapez :
-
-```sql
-CREATE USER adilstore_user WITH PASSWORD 'VotreMotDePasseFort123';
-CREATE DATABASE adilstore_db OWNER adilstore_user;
-GRANT ALL PRIVILEGES ON DATABASE adilstore_db TO adilstore_user;
-\q
+/votre-dossier-app/
+├── dist/
+│   ├── index.mjs          ← Point d'entrée principal
+│   ├── pino-worker.mjs
+│   ├── pino-file.mjs
+│   ├── pino-pretty.mjs
+│   ├── thread-stream-worker.mjs
+│   └── public/            ← Site web (HTML, CSS, JS)
+│       ├── index.html
+│       └── assets/
+├── package.json
+├── migrate.mjs
+├── seed.mjs
+└── .env.example
 ```
 
 ---
 
-## Étape 2 — Transférer les fichiers
+## Étape 2 — Configurer l'application Node.js dans hPanel
 
-Sur votre ordinateur local, compressez le dossier `deploy/` en ZIP :
+1. Dans hPanel → allez dans **Websites → Node.js**
+   *(ou cherchez "Node.js" dans le menu)*
+2. Cliquez sur **"Create Application"** (ou modifiez l'existante)
+3. Configurez :
 
-**Méthode A — Via FTP (FileZilla)**
-1. Connectez-vous à votre VPS via SFTP dans FileZilla
-2. Naviguez vers `/var/www/`
-3. Glissez-déposez le dossier `deploy/` → il devient `/var/www/adilsmartstore/`
+   | Paramètre | Valeur |
+   |---|---|
+   | **Node.js version** | 20.x (ou la plus récente disponible) |
+   | **Application mode** | Production |
+   | **Application root** | Le dossier où vous avez uploadé les fichiers |
+   | **Application startup file** | `dist/index.mjs` |
 
-**Méthode B — Via terminal (SCP)**
-```bash
-# Sur votre ordinateur local :
-scp -r deploy/ root@VOTRE_IP_VPS:/var/www/adilsmartstore
-```
-
-**Méthode C — Via Hostinger File Manager**
-1. Compressez `deploy/` en `deploy.zip`
-2. Uploadez via le File Manager du hPanel Hostinger
-3. Extrayez dans `/var/www/adilsmartstore/`
+4. Cliquez **Save / Create**
 
 ---
 
 ## Étape 3 — Configurer les variables d'environnement
 
-Sur le serveur, naviguez vers le dossier :
+Dans hPanel → Node.js → votre application → **Environment Variables** :
 
-```bash
-cd /var/www/adilsmartstore
-```
+Ajoutez ces variables (une par une) :
 
-Copiez le fichier d'exemple et éditez-le :
+| Nom | Valeur |
+|---|---|
+| `NODE_ENV` | `production` |
+| `DATABASE_URL` | *(votre chaîne Neon.tech copiée à l'étape 0)* |
+| `ADMIN_PASSWORD` | `adil2024` |
 
-```bash
-cp .env.example .env
-nano .env
-```
+> Le `PORT` est géré automatiquement par Hostinger, pas besoin de le définir.
 
-Remplissez les valeurs :
-
-```env
-NODE_ENV=production
-PORT=3000
-DATABASE_URL=postgresql://adilstore_user:VotreMotDePasseFort123@localhost:5432/adilstore_db
-SESSION_SECRET=générez-une-clé-aléatoire-ici
-```
-
-Pour générer une clé SESSION_SECRET :
-```bash
-openssl rand -base64 32
-```
-
-Sauvegardez avec `CTRL+O`, quittez avec `CTRL+X`.
+Cliquez **Save**.
 
 ---
 
-## Étape 4 — Migrer la base de données
+## Étape 4 — Créer les tables et insérer les produits (via SSH)
 
-Créez les tables dans la base de données :
+Hostinger Premium inclut l'accès SSH. Connectez-vous :
 
 ```bash
-cd /var/www/adilsmartstore
+ssh votre-user@votre-serveur.hostinger.com
+# (ou utilisez le Terminal dans hPanel)
+```
+
+Naviguez vers votre dossier d'application :
+```bash
+cd ~/domains/votre-domaine.com/   # adapter selon votre config
+```
+
+Créez les tables :
+```bash
 node migrate.mjs
+# → Vous devez voir : ✔ Migration terminée avec succès.
 ```
 
-Vous devez voir : `✔ Migration terminée avec succès.`
-
----
-
-## Étape 5 — Insérer les données initiales (produits)
-
+Insérez les 23 produits :
 ```bash
 node seed.mjs
+# → Vous devez voir tous les produits listés avec ✔
 ```
 
-Vous devez voir tous les produits insérés avec `✔`.
-
-> Si vous avez déjà des données et ne voulez pas repartir de zéro, passez cette étape.
+> **Si vous n'avez pas d'accès SSH**, vous pouvez aussi utiliser le terminal intégré dans hPanel (File Manager → Terminal).
 
 ---
 
-## Étape 6 — Démarrer l'application avec PM2
+## Étape 5 — Démarrer l'application
 
-```bash
-cd /var/www/adilsmartstore
-
-# Charger le fichier .env dans PM2
-export $(cat .env | grep -v '^#' | xargs)
-
-# Démarrer l'application
-pm2 start pm2.config.cjs --env production
-
-# Sauvegarder la config PM2 (redémarrage automatique après reboot)
-pm2 save
-pm2 startup
-```
-
-Suivez l'instruction affichée par `pm2 startup` (une commande à copier-coller).
-
-Vérifier que l'application tourne :
-
-```bash
-pm2 status
-pm2 logs adil-smart-store
-```
-
-Vous devez voir : `Server listening port=3000`
+Dans hPanel → Node.js → votre application :
+- Cliquez **"Start"** ou **"Restart"**
+- Attendez quelques secondes
+- Le statut doit passer à **Running** (vert)
 
 ---
 
-## Étape 7 — Configurer Nginx (proxy)
+## Étape 6 — Vérification
 
-```bash
-# Copier la configuration Nginx
-cp /var/www/adilsmartstore/nginx.conf /etc/nginx/sites-available/adilsmartstore
+Ouvrez votre navigateur sur votre domaine :
 
-# Éditez le fichier pour remplacer "votre-domaine.com" par votre vrai domaine
-nano /etc/nginx/sites-available/adilsmartstore
-```
-
-Remplacez `votre-domaine.com` par votre domaine réel, puis :
-
-```bash
-# Activer le site
-ln -s /etc/nginx/sites-available/adilsmartstore /etc/nginx/sites-enabled/
-
-# Désactiver le site par défaut (optionnel)
-rm -f /etc/nginx/sites-enabled/default
-
-# Tester la configuration
-nginx -t
-
-# Redémarrer Nginx
-systemctl reload nginx
-```
-
----
-
-## Étape 8 — Activer HTTPS (SSL gratuit Let's Encrypt)
-
-```bash
-apt install certbot python3-certbot-nginx -y
-certbot --nginx -d votre-domaine.com -d www.votre-domaine.com
-```
-
-Suivez les instructions. Certbot configure HTTPS automatiquement.
-
-Renouvellement automatique (déjà activé par certbot, vérifiez) :
-
-```bash
-certbot renew --dry-run
-```
-
----
-
-## Étape 9 — Vérification finale
-
-Ouvrez votre navigateur et allez sur :
-- `https://votre-domaine.com` → Page d'accueil du store
-- `https://votre-domaine.com/boutique` → Boutique
-- `https://votre-domaine.com/admin` → Admin (mot de passe: `adil2024`)
-- `https://votre-domaine.com/api/healthz` → Doit retourner `{"status":"ok"}`
-
----
-
-## Commandes utiles au quotidien
-
-| Action | Commande |
-|--------|---------|
-| Voir l'état de l'app | `pm2 status` |
-| Voir les logs en direct | `pm2 logs adil-smart-store` |
-| Redémarrer l'app | `pm2 restart adil-smart-store` |
-| Arrêter l'app | `pm2 stop adil-smart-store` |
-| Vérifier Nginx | `nginx -t` |
-| Recharger Nginx | `systemctl reload nginx` |
-| Vérifier PostgreSQL | `systemctl status postgresql` |
+| URL | Attendu |
+|---|---|
+| `https://votre-domaine.com` | Page d'accueil Adil Smart Store |
+| `https://votre-domaine.com/boutique` | Les 23 produits |
+| `https://votre-domaine.com/contact` | Page contact + Google Maps |
+| `https://votre-domaine.com/admin` | Dashboard admin (mot de passe: `adil2024`) |
+| `https://votre-domaine.com/api/healthz` | `{"status":"ok"}` |
 
 ---
 
 ## Mise à jour du site (après modifications)
 
-1. Sur votre ordinateur, relancez le build : `node scripts/build-deploy.mjs`
-2. Transférez le nouveau dossier `deploy/` sur le VPS
-3. Redémarrez l'app : `pm2 restart adil-smart-store`
+1. Téléchargez le nouveau ZIP depuis Replit
+2. Uploadez-le dans le dossier de l'app via File Manager
+3. Extrayez en écrasant les fichiers existants
+4. Dans hPanel → Node.js → cliquez **Restart**
+
+> Le seed n'est à relancer que si vous voulez réinitialiser tous les produits.
+> Les données que vous avez ajoutées via l'admin `/admin` sont préservées.
 
 ---
 
 ## Résolution des problèmes
 
+**L'app affiche une erreur 500 :**
+- Vérifiez que `DATABASE_URL` est bien configurée dans les env variables
+- Testez la connexion Neon.tech depuis leur dashboard
+
 **L'app ne démarre pas :**
-```bash
-pm2 logs adil-smart-store --lines 50
-```
+- Vérifiez que le startup file est bien `dist/index.mjs`
+- Vérifiez que la version Node.js est 20+
 
-**Erreur de connexion à la base de données :**
-```bash
-# Vérifiez la DATABASE_URL dans .env
-# Testez la connexion :
-psql postgresql://adilstore_user:VOTRE_MOT_DE_PASSE@localhost:5432/adilstore_db
-```
+**Les produits n'apparaissent pas :**
+- Relancez `node migrate.mjs` puis `node seed.mjs` via SSH/Terminal
 
-**Erreur 502 Bad Gateway (Nginx) :**
-```bash
-# Vérifiez que l'app tourne sur le port 3000
-pm2 status
-curl http://localhost:3000/api/healthz
-```
-
-**Port 3000 déjà utilisé :**
-```bash
-lsof -i :3000
-kill -9 PID_DU_PROCESSUS
-```
+**Erreur SSL PostgreSQL :**
+- Assurez-vous que votre DATABASE_URL se termine par `?sslmode=require`
